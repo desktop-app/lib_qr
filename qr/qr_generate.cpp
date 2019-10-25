@@ -56,6 +56,7 @@ QImage GenerateSingle(int size, Qt::GlobalColor bg, Qt::GlobalColor color) {
 	result.fill(bg);
 	{
 		auto p = QPainter(&result);
+		p.setCompositionMode(QPainter::CompositionMode_Source);
 		PrepareForRound(p);
 		p.setBrush(color);
 		p.drawRoundedRect(
@@ -77,8 +78,8 @@ QImage Generate(const Data &data, int pixel) {
 	const auto replaceElements = ReplaceElements(data);
 	const auto replaceFrom = (data.size - replaceElements) / 2;
 	const auto replaceTill = (data.size - replaceFrom);
-	const auto black = GenerateSingle(pixel, Qt::white, Qt::black);
-	const auto white = GenerateSingle(pixel, Qt::black, Qt::white);
+	const auto black = GenerateSingle(pixel, Qt::transparent, Qt::black);
+	const auto white = GenerateSingle(pixel, Qt::black, Qt::transparent);
 	const auto value = [&](int row, int column) {
 		return (row >= 0)
 			&& (row < data.size)
@@ -109,14 +110,16 @@ QImage Generate(const Data &data, int pixel) {
 		data.size * pixel,
 		data.size * pixel,
 		QImage::Format_ARGB32_Premultiplied);
+	result.fill(Qt::transparent);
 	{
 		auto p = QPainter(&result);
+		p.setCompositionMode(QPainter::CompositionMode_Source);
 		const auto skip = pixel - pixel / 2;
 		const auto brect = [&](int x, int y, int width, int height) {
 			p.fillRect(x, y, width, height, Qt::black);
 		};
 		const auto wrect = [&](int x, int y, int width, int height) {
-			p.fillRect(x, y, width, height, Qt::white);
+			p.fillRect(x, y, width, height, Qt::transparent);
 		};
 		const auto large = [&](int x, int y) {
 			p.setBrush(Qt::black);
@@ -124,7 +127,7 @@ QImage Generate(const Data &data, int pixel) {
 				QRect{ x, y, pixel * 7, pixel * 7 },
 				pixel * 2.,
 				pixel * 2.);
-			p.setBrush(Qt::white);
+			p.setBrush(Qt::transparent);
 			p.drawRoundedRect(
 				QRect{ x + pixel, y + pixel, pixel * 5, pixel * 5 },
 				pixel * 1.5,
@@ -145,7 +148,6 @@ QImage Generate(const Data &data, int pixel) {
 				const auto x = column * pixel;
 				const auto y = row * pixel;
 				const auto index = row * data.size + column;
-				const auto fill = data.values[index] ? Qt::black : Qt::white;
 				if (value(row, column)) {
 					if (blackFull(row, column)) {
 						brect(x, y, pixel, pixel);
