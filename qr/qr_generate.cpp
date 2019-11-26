@@ -73,7 +73,7 @@ void PrepareForRound(QPainter &p) {
 	p.setPen(Qt::NoPen);
 }
 
-QImage GenerateSingle(int size, Qt::GlobalColor bg, Qt::GlobalColor color) {
+QImage GenerateSingle(int size, QColor bg, QColor color) {
 	auto result = QImage(size, size, QImage::Format_ARGB32_Premultiplied);
 	result.fill(bg);
 	{
@@ -93,15 +93,16 @@ int ReplaceSize(const Data &data, int pixel) {
 	return ReplaceElements(data) * pixel;
 }
 
-QImage Generate(const Data &data, int pixel) {
+QImage Generate(const Data &data, int pixel, QColor fg) {
 	Expects(data.size > 0);
 	Expects(data.values.size() == data.size * data.size);
 
+	const auto bg = Qt::transparent;
 	const auto replaceElements = ReplaceElements(data);
 	const auto replaceFrom = (data.size - replaceElements) / 2;
 	const auto replaceTill = (data.size - replaceFrom);
-	const auto black = GenerateSingle(pixel, Qt::transparent, Qt::black);
-	const auto white = GenerateSingle(pixel, Qt::black, Qt::transparent);
+	const auto black = GenerateSingle(pixel, bg, fg);
+	const auto white = GenerateSingle(pixel, fg, bg);
 	const auto value = [&](int row, int column) {
 		return (row >= 0)
 			&& (row < data.size)
@@ -132,29 +133,29 @@ QImage Generate(const Data &data, int pixel) {
 		data.size * pixel,
 		data.size * pixel,
 		QImage::Format_ARGB32_Premultiplied);
-	result.fill(Qt::transparent);
+	result.fill(bg);
 	{
 		auto p = QPainter(&result);
 		p.setCompositionMode(QPainter::CompositionMode_Source);
 		const auto skip = pixel - pixel / 2;
 		const auto brect = [&](int x, int y, int width, int height) {
-			p.fillRect(x, y, width, height, Qt::black);
+			p.fillRect(x, y, width, height, fg);
 		};
 		const auto wrect = [&](int x, int y, int width, int height) {
-			p.fillRect(x, y, width, height, Qt::transparent);
+			p.fillRect(x, y, width, height, bg);
 		};
 		const auto large = [&](int x, int y) {
-			p.setBrush(Qt::black);
+			p.setBrush(fg);
 			p.drawRoundedRect(
 				QRect{ x, y, pixel * 7, pixel * 7 },
 				pixel * 2.,
 				pixel * 2.);
-			p.setBrush(Qt::transparent);
+			p.setBrush(bg);
 			p.drawRoundedRect(
 				QRect{ x + pixel, y + pixel, pixel * 5, pixel * 5 },
 				pixel * 1.5,
 				pixel * 1.5);
-			p.setBrush(Qt::black);
+			p.setBrush(fg);
 			p.drawRoundedRect(
 				QRect{ x + pixel * 2, y + pixel * 2, pixel * 3, pixel * 3 },
 				pixel,

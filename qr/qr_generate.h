@@ -7,6 +7,7 @@
 #pragma once
 
 #include <QtGui/QImage>
+#include <QtGui/QColor>
 #include <QtCore/QString>
 
 #include <vector>
@@ -31,7 +32,10 @@ struct Data {
 [[nodiscard]] Data Encode(
 	const QString &text,
 	Redundancy redundancy = Redundancy::Default);
-[[nodiscard]] QImage Generate(const Data &data, int pixel);
+[[nodiscard]] QImage Generate(
+	const Data &data,
+	int pixel,
+	QColor fg = Qt::black);
 [[nodiscard]] int ReplaceSize(const Data &data, int pixel);
 [[nodiscard]] QImage ReplaceCenter(QImage qr, const QImage &center);
 
