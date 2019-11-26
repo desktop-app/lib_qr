@@ -18,19 +18,41 @@ namespace {
 using namespace qrcodegen;
 
 [[nodiscard]] int ReplaceElements(const Data &data) {
-	const auto elements = (data.size / 4);
+	const auto elements = [&] {
+		switch (data.redundancy) {
+		case Redundancy::Low: return data.size / 5;
+		case Redundancy::Medium: return data.size / 4;
+		case Redundancy::Quartile: return data.size / 3;
+		case Redundancy::High: return data.size / 2;
+		}
+		Unexpected("Redundancy value in Qr::ReplaceElements.");
+	}();
+	const auto close = (data.redundancy != Redundancy::Quartile);
 	const auto shift = (data.size - elements) % 2;
-	return (elements - shift);
+	return elements + (close ? -1 : 1) * shift;
+}
+
+[[nodiscard]] QrCode::Ecc RedundancyToEcc(Redundancy redundancy) {
+	switch (redundancy) {
+	case Redundancy::Low: return QrCode::Ecc::LOW;
+	case Redundancy::Medium: return QrCode::Ecc::MEDIUM;
+	case Redundancy::Quartile: return QrCode::Ecc::QUARTILE;
+	case Redundancy::High: return QrCode::Ecc::HIGH;
+	}
+	Unexpected("Redundancy value in Qr::RedundancyToEcc.");
 }
 
 } // namespace
 
-Data Encode(const QString &text) {
+Data Encode(const QString &text, Redundancy redundancy) {
 	Expects(!text.isEmpty());
 
 	auto result = Data();
+	result.redundancy = redundancy;
 	const auto utf8 = text.toStdString();
-	const auto qr = QrCode::encodeText(utf8.c_str(), QrCode::Ecc::MEDIUM);
+	const auto qr = QrCode::encodeText(
+		utf8.c_str(),
+		RedundancyToEcc(redundancy));
 	result.size = qr.getSize();
 	Assert(result.size > 0);
 

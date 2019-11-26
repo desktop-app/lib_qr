@@ -13,12 +13,24 @@
 
 namespace Qr {
 
+enum class Redundancy {
+	Low,
+	Medium,
+	Quartile,
+	High,
+
+	Default = Medium
+};
+
 struct Data {
 	int size = 0;
+	Redundancy redundancy = Redundancy::Default;
 	std::vector<bool> values; // size x size
 };
 
-[[nodiscard]] Data Encode(const QString &text);
+[[nodiscard]] Data Encode(
+	const QString &text,
+	Redundancy redundancy = Redundancy::Default);
 [[nodiscard]] QImage Generate(const Data &data, int pixel);
 [[nodiscard]] int ReplaceSize(const Data &data, int pixel);
 [[nodiscard]] QImage ReplaceCenter(QImage qr, const QImage &center);
