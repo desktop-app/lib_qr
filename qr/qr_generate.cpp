@@ -68,8 +68,7 @@ Data Encode(const QString &text, Redundancy redundancy) {
 void PrepareForRound(QPainter &p) {
 	p.setRenderHints(QPainter::Antialiasing
 		| QPainter::SmoothPixmapTransform
-		| QPainter::TextAntialiasing
-		| QPainter::HighQualityAntialiasing);
+		| QPainter::TextAntialiasing);
 	p.setPen(Qt::NoPen);
 }
 
