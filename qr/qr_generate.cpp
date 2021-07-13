@@ -169,7 +169,6 @@ QImage Generate(const Data &data, int pixel, QColor fg) {
 				}
 				const auto x = column * pixel;
 				const auto y = row * pixel;
-				const auto index = row * data.size + column;
 				if (value(row, column)) {
 					if (blackFull(row, column)) {
 						brect(x, y, pixel, pixel);
