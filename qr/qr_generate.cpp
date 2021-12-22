@@ -8,7 +8,7 @@
 
 #include "base/assertion.h"
 
-#include "QrCode.hpp"
+#include <qrcodegen.hpp>
 #include <QtGui/QPainter>
 #include <string>
 
