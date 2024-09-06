@@ -35,7 +35,8 @@ struct Data {
 [[nodiscard]] QImage Generate(
 	const Data &data,
 	int pixel,
-	QColor fg = Qt::black);
+	QColor fg = Qt::black,
+	QColor bg = Qt::transparent);
 [[nodiscard]] int ReplaceSize(const Data &data, int pixel);
 [[nodiscard]] QImage ReplaceCenter(QImage qr, const QImage &center);
 

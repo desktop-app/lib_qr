@@ -97,11 +97,10 @@ int ReplaceSize(const Data &data, int pixel) {
 	return ReplaceElements(data) * pixel;
 }
 
-QImage Generate(const Data &data, int pixel, QColor fg) {
+QImage Generate(const Data &data, int pixel, QColor fg, QColor bg) {
 	Expects(data.size > 0);
 	Expects(data.values.size() == data.size * data.size);
 
-	const auto bg = Qt::transparent;
 	const auto replaceElements = ReplaceElements(data);
 	const auto replaceFrom = (data.size - replaceElements) / 2;
 	const auto replaceTill = (data.size - replaceFrom);
